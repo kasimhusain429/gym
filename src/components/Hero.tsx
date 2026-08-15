@@ -2,39 +2,49 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 // --- PARALLAX TUNNEL UTILS ---
-const SvgText = ({ z, isMask, highlight }: { z: number, isMask?: boolean, highlight?: boolean }) => (
-  <div 
-    style={{ 
-      position: 'absolute', 
-      top: '-50%', left: '-50%', right: '-50%', bottom: '-50%', // Massive overflow to cover rotations
-      transform: `translateZ(${z}px)`,
-      pointerEvents: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}
-  >
-    <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
-      {isMask ? (
-        <>
-          <defs>
-            <mask id="front-mask">
-              <rect width="100%" height="100%" fill="white" />
-              <text x="50%" y="45%" fill="black" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '12vw', fontWeight: 900, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em' }}>REDEFINE</text>
-              <text x="50%" y="55%" fill="black" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '12vw', fontWeight: 900, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em' }}>LIMITS</text>
-            </mask>
-          </defs>
-          <rect width="100%" height="100%" fill="var(--color-background)" mask="url(#front-mask)" />
-        </>
-      ) : (
-        <>
-          <text x="50%" y="45%" fill="none" stroke={highlight ? "var(--color-primary)" : "rgba(255,255,255,0.15)"} strokeWidth={highlight ? "4" : "3"} textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '12vw', fontWeight: 900, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em', filter: highlight ? 'drop-shadow(0 0 20px rgba(249, 115, 22, 0.5))' : 'none' }}>REDEFINE</text>
-          <text x="50%" y="55%" fill="none" stroke={highlight ? "var(--color-primary)" : "rgba(255,255,255,0.15)"} strokeWidth={highlight ? "4" : "3"} textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '12vw', fontWeight: 900, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em', filter: highlight ? 'drop-shadow(0 0 20px rgba(249, 115, 22, 0.5))' : 'none' }}>LIMITS</text>
-        </>
-      )}
-    </svg>
-  </div>
-);
+const SvgText = ({ z, isMask, highlight }: { z: number, isMask?: boolean, highlight?: boolean }) => {
+  const textStyle = { 
+    fontSize: 'clamp(3rem, 13vw, 12rem)', 
+    fontWeight: 900, 
+    fontFamily: 'var(--font-heading)', 
+    letterSpacing: '-0.02em',
+    filter: highlight ? 'drop-shadow(0 0 20px rgba(249, 115, 22, 0.5))' : 'none'
+  };
+
+  return (
+    <div 
+      style={{ 
+        position: 'absolute', 
+        top: '-50%', left: '-50%', right: '-50%', bottom: '-50%', // Massive overflow to cover rotations
+        transform: `translateZ(${z}px)`,
+        pointerEvents: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+        {isMask ? (
+          <>
+            <defs>
+              <mask id="front-mask">
+                <rect width="100%" height="100%" fill="white" />
+                <text x="50%" y="50%" dy="-0.4em" fill="black" textAnchor="middle" dominantBaseline="middle" style={textStyle}>REDEFINE</text>
+                <text x="50%" y="50%" dy="0.5em" fill="black" textAnchor="middle" dominantBaseline="middle" style={textStyle}>LIMITS</text>
+              </mask>
+            </defs>
+            <rect width="100%" height="100%" fill="var(--color-background)" mask="url(#front-mask)" />
+          </>
+        ) : (
+          <>
+            <text x="50%" y="50%" dy="-0.4em" fill="none" stroke={highlight ? "var(--color-primary)" : "rgba(255,255,255,0.15)"} strokeWidth={highlight ? "4" : "3"} textAnchor="middle" dominantBaseline="middle" style={textStyle}>REDEFINE</text>
+            <text x="50%" y="50%" dy="0.5em" fill="none" stroke={highlight ? "var(--color-primary)" : "rgba(255,255,255,0.15)"} strokeWidth={highlight ? "4" : "3"} textAnchor="middle" dominantBaseline="middle" style={textStyle}>LIMITS</text>
+          </>
+        )}
+      </svg>
+    </div>
+  );
+};
 
 export default function Hero() {
   // Parallax Mouse Logic
@@ -107,7 +117,7 @@ export default function Hero() {
               muted 
               loop 
               playsInline
-              poster="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=3270&auto=format&fit=crop"
+              poster="/images/hero_poster.jpg"
               src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
               style={{ 
                 width: '100%', 

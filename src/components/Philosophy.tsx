@@ -42,7 +42,7 @@ export default function Philosophy() {
           }}
         >
           <motion.img 
-            src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=3270&auto=format&fit=crop" 
+            src="/images/phil_image.jpg" 
             alt="Premium Gym Atmosphere" 
             className="cinematic-image"
             style={{ scale: imageScale }}

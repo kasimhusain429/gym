@@ -298,6 +298,38 @@
   margin: 0;
 }
 
+/* Mobile Deck */
+.mobile-deck-container {
+  position: relative;
+  height: 450px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-deck-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  cursor: grab;
+  /* Disable text selection during drag */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mobile-deck-card:active {
+  cursor: grabbing;
+}
+
 /* Transformations */
 .transformations-section {
   background-color: var(--color-background);
@@ -422,20 +454,32 @@
 }
 
 .trainer-img-container {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 16rem;
-  height: 20rem;
+  position: relative;
+  width: 100%;
+  height: 300px;
   border-radius: var(--radius-md);
   overflow: hidden;
   pointer-events: none;
   z-index: 20;
-  display: none;
+  display: block;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 767px) {
+  .trainer-img-container {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 @media (min-width: 768px) {
-  .trainer-img-container { display: block; }
+  .trainer-img-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16rem;
+    height: 20rem;
+    margin-bottom: 0;
+  }
 }
 
 .trainer-img {
@@ -498,24 +542,26 @@
   grid-template-columns: 1fr;
   gap: 2rem;
   padding: 0 1rem;
-  height: 80vh;
+  height: auto;
 }
 @media (min-width: 768px) {
-  .facilities-grid { grid-template-columns: repeat(3, 1fr); }
+  .facilities-grid { 
+    grid-template-columns: repeat(3, 1fr); 
+    height: 80vh;
+  }
 }
 
 .facility-card {
   width: 100%;
   border-radius: var(--radius-xl);
   overflow: hidden;
+  height: 300px;
 }
-.facility-card-1 { height: 60vh; }
-.facility-card-2 { height: 70vh; }
-.facility-card-3 { height: 50vh; }
 
 @media (min-width: 768px) {
-  .facility-card-1 { margin-top: 8rem; }
-  .facility-card-3 { margin-top: 16rem; }
+  .facility-card-1 { height: 60vh; margin-top: 8rem; }
+  .facility-card-2 { height: 70vh; }
+  .facility-card-3 { height: 50vh; margin-top: 16rem; }
 }
 
 .facility-img {
@@ -628,4 +674,197 @@
 
 .marquee-item {
   margin: 0 2rem;
+}
+
+/* Mobile Grid & Modals */
+.mobile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.mobile-grid-item {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 3/4;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.mobile-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.glass-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.glass-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 26, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+.glass-modal-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  aspect-ratio: 3/4;
+}
+
+.glass-modal-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.glass-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: none;
+  cursor: pointer;
+}
+
+.glass-modal-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  color: white;
+}
+
+.glass-modal-text h3 {
+  font-size: 2.5rem;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-heading);
+}
+
+.glass-modal-text p {
+  font-size: 1.125rem;
+  opacity: 0.8;
+}
+
+/* Mobile Trainers - Circular Avatars Layout */
+.mobile-trainer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.mobile-trainer-hero {
+  width: 100%;
+  aspect-ratio: 4/5;
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  background-color: var(--color-background);
+}
+
+.mobile-trainer-hero-img-wrap {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.mobile-trainer-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobile-trainer-hero-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3rem 1.5rem 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+  color: white;
+  pointer-events: none;
+}
+
+.mobile-trainer-hero-overlay h3 {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.mobile-trainer-hero-overlay p {
+  color: var(--color-primary);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.mobile-trainer-avatars {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  /* Hide scrollbar for clean look */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.mobile-trainer-avatars::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-trainer-avatar {
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 2px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+
+.mobile-trainer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.mobile-trainer-avatar.active {
+  border-color: var(--color-primary);
+  opacity: 1;
+  transform: scale(1.05);
 }
