@@ -1,179 +1,144 @@
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { gsap, MQ, useGSAP } from '../lib/motion';
+import { useScroll } from '../lib/scroll';
+import { Button } from './ui';
 
-// --- PARALLAX TUNNEL UTILS ---
-const SvgText = ({ z, isMask, highlight }: { z: number, isMask?: boolean, highlight?: boolean }) => {
-  const textStyle = { 
-    fontSize: 'clamp(3rem, 13vw, 12rem)', 
-    fontWeight: 900, 
-    fontFamily: 'var(--font-heading)', 
-    letterSpacing: '-0.02em',
-    filter: highlight ? 'drop-shadow(0 0 20px rgba(249, 115, 22, 0.5))' : 'none'
-  };
+const LINES = ['Redefine', 'limits'];
 
-  return (
-    <div 
-      style={{ 
-        position: 'absolute', 
-        top: '-50%', left: '-50%', right: '-50%', bottom: '-50%', // Massive overflow to cover rotations
-        transform: `translateZ(${z}px)`,
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-    >
-      <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
-        {isMask ? (
-          <>
-            <defs>
-              <mask id="front-mask">
-                <rect width="100%" height="100%" fill="white" />
-                <text x="50%" y="50%" dy="-0.4em" fill="black" textAnchor="middle" dominantBaseline="middle" style={textStyle}>REDEFINE</text>
-                <text x="50%" y="50%" dy="0.5em" fill="black" textAnchor="middle" dominantBaseline="middle" style={textStyle}>LIMITS</text>
-              </mask>
-            </defs>
-            <rect width="100%" height="100%" fill="var(--color-background)" mask="url(#front-mask)" />
-          </>
-        ) : (
-          <>
-            <text x="50%" y="50%" dy="-0.4em" fill="none" stroke={highlight ? "var(--color-primary)" : "rgba(255,255,255,0.15)"} strokeWidth={highlight ? "4" : "3"} textAnchor="middle" dominantBaseline="middle" style={textStyle}>REDEFINE</text>
-            <text x="50%" y="50%" dy="0.5em" fill="none" stroke={highlight ? "var(--color-primary)" : "rgba(255,255,255,0.15)"} strokeWidth={highlight ? "4" : "3"} textAnchor="middle" dominantBaseline="middle" style={textStyle}>LIMITS</text>
-          </>
-        )}
-      </svg>
-    </div>
-  );
+type Props = {
+  ready: boolean;
+  onPass: () => void;
+  onExplore: () => void;
 };
 
-export default function Hero() {
-  // Parallax Mouse Logic
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const smoothX = useSpring(mouseX, { stiffness: 40, damping: 20 });
-  const smoothY = useSpring(mouseY, { stiffness: 40, damping: 20 });
-  const rotateX = useTransform(smoothY, [-1, 1], [10, -10]);
-  const rotateY = useTransform(smoothX, [-1, 1], [-10, 10]);
+export function Hero({ ready, onPass, onExplore }: Props) {
+  const root = useRef<HTMLElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
+  const { reduced } = useScroll();
+  const [tall] = useState(() => window.matchMedia('(max-aspect-ratio: 1/1)').matches);
+  const reel = tall ? 'tall' : 'wide';
+  const poster = `/video/poster-${reel}.webp`;
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    const { innerWidth, innerHeight } = window;
-    const x = (clientX / innerWidth) * 2 - 1;
-    const y = (clientY / innerHeight) * 2 - 1;
-    mouseX.set(x);
-    mouseY.set(y);
-  };
+  // Play the reel only after the intro, and only while the hero is on screen.
+  useEffect(() => {
+    const el = video.current;
+    if (!el || !ready || reduced) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) el.play().catch(() => {});
+      else el.pause();
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ready, reduced]);
+
+  /*
+   * Entrance and scroll motion drive separate, nested layers so they compose
+   * instead of fighting: entrance → .hero__media / .hero__line / .hero__foot > *,
+   * scroll → .hero__frame / .hero__title / .hero__foot.
+   */
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add(MQ.motion, () => {
+        // hidden start state, set before first paint
+        gsap.set('.hero__char > span', { yPercent: 108 });
+        gsap.set('.hero__line', { '--wdth': 125 });
+        gsap.set('.hero__media', { clipPath: 'inset(49.5% 0% 49.5% 0%)' });
+        gsap.set('.hero__foot > *', { autoAlpha: 0, y: 24 });
+
+        // Scroll: put the hero under load. Type compresses, the frame squeezes to a band.
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: '.hero__pin',
+              start: 'top top',
+              end: '+=85%',
+              pin: true,
+              scrub: true,
+              anticipatePin: 1,
+            },
+          })
+          .fromTo('.hero__title', { '--wdth': 100 }, { '--wdth': 62, ease: 'none' }, 0)
+          .fromTo(
+            '.hero__frame',
+            { clipPath: 'inset(0% 0% 0% 0%)' },
+            { clipPath: 'inset(16% 0% 30% 0%)', ease: 'none' },
+            0,
+          )
+          .fromTo('.hero__foot', { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: -40, ease: 'none', duration: 0.4 }, 0);
+      });
+      return () => mm.revert();
+    },
+    { scope: root },
+  );
+
+  useGSAP(
+    () => {
+      if (!ready) return;
+      const mm = gsap.matchMedia();
+      mm.add(MQ.motion, () => {
+        // Entrance: the bar-line slit opens, then the headline settles from wide to its set width.
+        gsap
+          .timeline()
+          .to('.hero__media', { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: 'expo.inOut' })
+          .fromTo('.hero__frame', { scale: 1.3 }, { scale: 1, duration: 2.2, ease: 'expo.out' }, 0.25)
+          .to('.hero__char > span', { yPercent: 0, duration: 1.2, stagger: 0.035, ease: 'expo.out' }, 0.6)
+          .to('.hero__line', { '--wdth': 100, duration: 1.7, ease: 'expo.out', clearProps: '--wdth' }, 0.6)
+          .to('.hero__foot > *', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.1 }, 1.05);
+      });
+      return () => mm.revert();
+    },
+    { scope: root, dependencies: [ready] },
+  );
 
   return (
-    <section 
-      className="hero-section" 
-      onMouseMove={handleMouseMove}
-      style={{ 
-        position: 'relative', 
-        height: '100vh', 
-        width: '100vw', 
-        overflow: 'hidden', 
-        backgroundColor: 'var(--color-background)',
-        display: 'flex'
-      }}
-    >
-      
-      {/* FULL SCREEN PANEL: Deep Parallax Typography Tunnel */}
-      <div 
-        style={{ 
-          height: '100%', 
-          width: '100%',
-          position: 'relative', 
-          overflow: 'hidden', 
-          perspective: '1200px'
-        }}
-      >
-        <motion.div
-          initial={{ translateZ: -600, scale: 0.9 }}
-          animate={{ translateZ: 0, scale: 1 }}
-          transition={{ duration: 2.5, ease: "easeOut" }}
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            transformStyle: 'preserve-3d',
-            rotateX,
-            rotateY
-          }}
-        >
-          {/* Deepest Layer: Cinematic Video */}
-          <div 
-            style={{ 
-              position: 'absolute', 
-              top: '-30%', left: '-30%', right: '-30%', bottom: '-30%',
-              transform: 'translateZ(-600px)',
-              pointerEvents: 'none'
-            }}
-          >
-            {/* Dark vignette blending into brand background */}
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle, rgba(249, 115, 22, 0.05) 20%, var(--color-background) 85%)', zIndex: 10 }} />
-            <video 
-              autoPlay 
-              muted 
-              loop 
-              playsInline
-              poster="/images/hero_poster.jpg"
-              src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'cover', 
-                filter: 'contrast(1.1) brightness(0.8)' 
-              }}
-            />
+    <section className="hero" id="top" ref={root} aria-labelledby="hero-title">
+      <div className="hero__pin">
+        <div className="hero__media">
+          <div className="hero__frame">
+            {reduced ? (
+              <img src={poster} alt="" width={tall ? 720 : 1280} height={tall ? 1280 : 720} fetchPriority="high" />
+            ) : (
+              <video
+                ref={video}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster={poster}
+                aria-hidden="true"
+                src={`/video/load-reel-${reel}.mp4`}
+              />
+            )}
           </div>
-          
-          {/* Tunnel Outlines */}
-          <SvgText z={-400} highlight={true} />
-          <SvgText z={-200} />
-          <SvgText z={0} />
-          <SvgText z={200} />
+        </div>
+        <div className="hero__shade" aria-hidden="true" />
 
-          {/* Front Solid Mask */}
-          <SvgText z={400} isMask={true} />
+        <h1 className="hero__title" id="hero-title">
+          <span className="sr-only">Redefine limits</span>
+          {LINES.map((line, li) => (
+            <span key={line} className={`hero__line hero__line--${li ? 'b' : 'a'}`} aria-hidden="true">
+              {[...line].map((ch, i) => (
+                <span className="hero__char" key={i}>
+                  <span>{ch}</span>
+                </span>
+              ))}
+            </span>
+          ))}
+        </h1>
 
-        </motion.div>
+        <div className="hero__foot">
+          <p className="lead hero__lead">
+            HIIT & Strength, Power Yoga, Recovery and 1-on-1 Coaching, under one roof.
+          </p>
+          <div className="hero__ctas">
+            <Button onClick={onPass}>Claim your pass</Button>
+            <Button variant="ghost" onClick={onExplore}>
+              Explore disciplines
+            </Button>
+          </div>
+        </div>
       </div>
-
-      {/* Floating Center CTA (Global) */}
-      <div 
-        style={{ 
-          position: 'absolute', 
-          inset: 0, 
-          pointerEvents: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          paddingBottom: '4rem',
-          zIndex: 50
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 2.0 }}
-          style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}
-        >
-          <button className="btn-primary" style={{ padding: '1.25rem 3.5rem', borderRadius: '4px', letterSpacing: '0.15em' }}>
-            Start the Journey
-          </button>
-
-          <motion.div 
-            style={{ color: 'var(--color-primary)' }}
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          >
-            <ChevronDown size={30} style={{ opacity: 0.8 }} />
-          </motion.div>
-        </motion.div>
-      </div>
-
     </section>
   );
 }

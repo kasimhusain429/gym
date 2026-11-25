@@ -1,34 +1,39 @@
 {
-  "name": "sample4",
+  "name": "ultrafit-club",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "reel:wide": "remotion render remotion/index.ts LoadReelWide public/video/load-reel-wide.mp4 --codec=h264 --crf=26",
+    "reel:tall": "remotion render remotion/index.ts LoadReelTall public/video/load-reel-tall.mp4 --codec=h264 --crf=26",
+    "reel": "npm run reel:wide && npm run reel:tall"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.8",
-    "@react-three/fiber": "^9.7.0",
-    "@studio-freight/lenis": "^1.0.42",
-    "@types/three": "^0.185.4",
+    "@gsap/react": "^2.1.2",
     "clsx": "^2.1.1",
-    "framer-motion": "^13.1.0",
     "gsap": "^3.15.0",
+    "lenis": "^1.3.28",
     "lucide-react": "^1.31.0",
+    "motion": "^14.14.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "tailwind-merge": "^3.6.0",
-    "three": "^0.185.1"
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@remotion/cli": "^4.0.547",
+    "@remotion/transitions": "^4.0.547",
+    "@tailwindcss/vite": "^4.3.5",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
     "oxlint": "^1.75.0",
+    "remotion": "^4.0.547",
+    "tailwindcss": "^4.2.2",
     "typescript": "~6.0.2",
     "vite": "^5.4.21"
   }
