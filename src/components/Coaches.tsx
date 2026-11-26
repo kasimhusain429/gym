@@ -91,6 +91,7 @@ export function Coaches({ onBook }: Props) {
                   key={c.id}
                   name={c.img}
                   portrait
+                  eager
                   alt={i === active ? `${c.first} ${c.last}, ${c.role}` : ''}
                   sizes="(min-width: 1024px) 40vw, 100vw"
                   className={i === active ? 'is-active' : i === previous ? 'was-active' : undefined}

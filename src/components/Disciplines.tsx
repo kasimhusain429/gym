@@ -14,7 +14,7 @@ function Plate({ d }: { d: Discipline }) {
   return (
     <div className="plate" aria-hidden="true">
       <div className="plate__photo">
-        <Photo name={d.img} alt="" sizes="(min-width: 1024px) 44vw, 86vw" />
+        <Photo name={d.img} alt="" sizes="(min-width: 1024px) 44vw, 86vw" eager />
       </div>
       <svg className="plate__rim" viewBox="0 0 400 400">
         <defs>

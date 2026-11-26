@@ -52,6 +52,7 @@ export function Ethos() {
             name="phil_image"
             alt="A member squatting a loaded barbell under the Iron & Grit wall"
             sizes="(min-width: 1680px) 1568px, 100vw"
+            eager
           />
         </figure>
       </div>

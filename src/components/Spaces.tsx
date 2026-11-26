@@ -66,7 +66,7 @@ export function Spaces() {
         <div className="spaces__stage">
           {SPACES.map((s, i) => (
             <figure className="space" key={s.id}>
-              <Photo name={s.img} alt={s.alt} sizes="100vw" />
+              <Photo name={s.img} alt={s.alt} sizes="100vw" eager />
               <figcaption className="space__cap">
                 <h3 className="space__name">{s.name}</h3>
                 <p className="space__line">{s.line}</p>

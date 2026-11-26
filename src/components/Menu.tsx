@@ -60,63 +60,63 @@ export function Menu({ open, onClose, onNavigate, onPass }: Props) {
 
   return (
     <LazyMotion features={domAnimation} strict>
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          ref={panel}
-          id="site-menu"
-          className="menu"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site menu"
-          data-lenis-prevent
-          initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
-          animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-          exit={{ clipPath: 'inset(100% 0% 0% 0%)' }}
-          transition={{ duration: 0.8 * d, ease: EASE_IN_OUT }}
-        >
-          <div className="wrap menu__top">
-            <span className="wordmark" aria-hidden="true">
-              ULTRAFIT
-            </span>
-            <button type="button" className="menu-btn" onClick={onClose}>
-              Close
-            </button>
-          </div>
-          <ul className="wrap menu__list">
-            {SECTIONS.map((s, i) => (
-              <motion.li
-                key={s.id}
-                initial={{ y: '70%', opacity: 0 }}
-                animate={{ y: '0%', opacity: 1 }}
-                transition={{ delay: (0.28 + i * 0.05) * d, duration: 0.8 * d, ease: EASE_OUT }}
-              >
-                <button
-                  type="button"
-                  className="menu__link"
-                  style={{ '--plate': plateFor(s.id) } as CSSProperties}
-                  onClick={() => onNavigate(s.id)}
-                >
-                  <i aria-hidden="true" />
-                  {s.label}
-                </button>
-              </motion.li>
-            ))}
-          </ul>
+      <AnimatePresence>
+        {open && (
           <motion.div
-            className="wrap menu__foot"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 * d, duration: 0.5 * d }}
+            ref={panel}
+            id="site-menu"
+            className="menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
+            data-lenis-prevent
+            initial={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)' }}
+            animate={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
+            exit={{ clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)' }}
+            transition={{ duration: 0.8 * d, ease: EASE_IN_OUT }}
           >
-            <p className="meta" style={{ margin: 0 }}>
-              HIIT & Strength, Power Yoga, Recovery and 1-on-1 Coaching
-            </p>
-            <Button onClick={onPass}>Claim your pass</Button>
+            <div className="wrap menu__top">
+              <span className="wordmark" aria-hidden="true">
+                ULTRAFIT
+              </span>
+              <button type="button" className="menu-btn" onClick={onClose}>
+                Close
+              </button>
+            </div>
+            <ul className="wrap menu__list">
+              {SECTIONS.map((s, i) => (
+                <motion.li
+                  key={s.id}
+                  initial={{ y: '70%', opacity: 0 }}
+                  animate={{ y: '0%', opacity: 1 }}
+                  transition={{ delay: (0.28 + i * 0.05) * d, duration: 0.8 * d, ease: EASE_OUT }}
+                >
+                  <button
+                    type="button"
+                    className="menu__link"
+                    style={{ '--plate': plateFor(s.id) } as CSSProperties}
+                    onClick={() => onNavigate(s.id)}
+                  >
+                    <i aria-hidden="true" />
+                    {s.label}
+                  </button>
+                </motion.li>
+              ))}
+            </ul>
+            <motion.div
+              className="wrap menu__foot"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 * d, duration: 0.5 * d }}
+            >
+              <p className="meta" style={{ margin: 0 }}>
+                HIIT & Strength, Power Yoga, Recovery and 1-on-1 Coaching
+              </p>
+              <Button onClick={onPass}>Claim your pass</Button>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
     </LazyMotion>
   );
 }
